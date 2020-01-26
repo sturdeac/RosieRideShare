@@ -1,24 +1,22 @@
 package edu.rosehulman.sturdeac.rosierideshare
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
+import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Mapbox.getInstance(this, "pk.eyJ1Ijoic3R1cmRlYWMiLCJhIjoiY2ppZWx2OWtyMDgwbDNrcXBhbnA5cG84OCJ9.Hp5qq-G8KXwAW4hUjP6QVg");
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        mapbox.onCreate(savedInstanceState)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -36,4 +34,39 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    // mapbox
+
+    @SuppressWarnings("MissingPermission")
+    override fun onStart() {
+        super.onStart()
+        mapbox.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapbox.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapbox.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapbox.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapbox.onDestroy()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapbox.onLowMemory()
+    }
+
+    // end mapbox
 }

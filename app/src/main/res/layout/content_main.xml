@@ -1,20 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:id="@+id/home_user_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher_round"
+            android:layout_margin="8dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="John D."
+            android:textSize="40sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
 
     <TextView
+        android:id="@+id/home_location_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Where to:"
+        android:textSize="30sp"
+        android:layout_margin="10dp"
+        android:layout_below="@id/home_user_info"
+        />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <EditText
+        android:id="@+id/home_location_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Address"
+        android:layout_below="@id/home_location_title"
+        android:layout_margin="10dp"
+        android:inputType="text"/>
+
+    <LinearLayout
+        android:id="@+id/home_time_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:layout_below="@id/home_location_edit_text"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="When:"
+            android:textSize="30sp"
+            android:layout_margin="10dp"/>
+        <EditText
+            android:id="@+id/home_day_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="Monday"
+            android:layout_margin="10dp"
+            android:inputType="text"/>
+        <EditText
+            android:id="@+id/home_time_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="1pm"
+            android:layout_margin="10dp"
+            android:inputType="text"/>
+    </LinearLayout>
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapbox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets"
+        android:layout_below="@id/home_time_info"
+        android:layout_above="@id/home_ride_button"/>
+
+    <!--    <com.google.android.gms.maps.MapView-->
+<!--        android:id="@+id/mapView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:layout_below="@id/home_time_info"-->
+<!--        android:layout_above="@id/home_ride_button"-->
+<!--        app:liteMode="true"/>-->
+
+    <Button
+        android:id="@+id/home_ride_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Find Ride"
+        android:textSize="30sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
+
+</RelativeLayout>
