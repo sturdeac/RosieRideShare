@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "149854624738",
+    "firebase_url": "https://rosie-ride-share.firebaseio.com",
+    "project_id": "rosie-ride-share",
+    "storage_bucket": "rosie-ride-share.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149854624738:android:34867a2b7f8d435de6b7bb",
+        "android_client_info": {
+          "package_name": "edu.rosehulman.sturdeac.rosierideshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "149854624738-bjql90ui9n6h0d1ov4epdkmm1tq17o0p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.rosehulman.sturdeac.rosierideshare",
+            "certificate_hash": "188cb4e41c39d05a57955fc803f5529012b98783"
+          }
+        },
+        {
+          "client_id": "149854624738-9s4duh1nv3468h4fdb7o4f5vnigrfqu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5EFOGRk-pucY_ORmty_tvNETr7iPG3wQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149854624738-9s4duh1nv3468h4fdb7o4f5vnigrfqu7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

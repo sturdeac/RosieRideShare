@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+            android:id="@+id/profilePic"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="75dp"
+            tools:srcCompat="@tools:sample/avatars[0]"
+            android:contentDescription="Profile Picture" />
+
+    <TextView
+            android:id="@+id/nameTextView"
+            android:layout_below="@id/profilePic"
+            android:layout_marginStart="50dp"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adam Stephenson" />
+
+    <TextView
+            android:id="@+id/numberTextView"
+            android:layout_below="@id/nameTextView"
+            android:layout_marginStart="50dp"
+            android:textSize="32sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="123-456-7890" />
+
+    <TextView
+            android:id="@+id/majorTextView"
+            android:layout_below="@id/numberTextView"
+            android:layout_marginStart="50dp"
+            android:textSize="32sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Computer Engineering" />
+
+    <TextView
+            android:id="@+id/yearTextView"
+            android:layout_below="@id/majorTextView"
+            android:layout_marginStart="50dp"
+            android:textSize="32sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Senior" />
+
+    <TextView
+            android:id="@+id/scheduleTextView"
+            android:layout_below="@id/yearTextView"
+            android:layout_marginStart="50dp"
+            android:textSize="32sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Availability: " />
+
+    <ImageView
+            android:id="@+id/schedulePic"
+            android:layout_below="@id/scheduleTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:srcCompat="@tools:sample/backgrounds/scenic[15]"
+            android:contentDescription="Schedule Picture" />
+</RelativeLayout>

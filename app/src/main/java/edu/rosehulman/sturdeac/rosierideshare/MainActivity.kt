@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -11,6 +12,9 @@ import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
@@ -18,18 +22,22 @@ import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.camera.CameraUpdate
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponent
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import edu.rosehulman.rosefire.Rosefire
+import edu.rosehulman.rosefire.RosefireResult
+import edu.rosehulman.rosefire.WebLoginActivity.REGISTRY_TOKEN
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
-class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineListener, OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineListener,
+    OnMapReadyCallback {
 
+    private val RC_ROSEFIRE_LOGIN = 1001
     val REQUEST_CHECK_SETTINGS = 1
     var settingsClient: SettingsClient? = null
 
@@ -42,8 +50,12 @@ class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Mapbox.getInstance(this, "pk.eyJ1Ijoic3R1cmRlYWMiLCJhIjoiY2ppZWx2OWtyMDgwbDNrcXBhbnA5cG84OCJ9.Hp5qq-G8KXwAW4hUjP6QVg");
+        Mapbox.getInstance(
+            this,
+            "pk.eyJ1Ijoic3R1cmRlYWMiLCJhIjoiY2ppZWx2OWtyMDgwbDNrcXBhbnA5cG84OCJ9.Hp5qq-G8KXwAW4hUjP6QVg"
+        )
         setContentView(R.layout.activity_main)
+        onRosefireLogin()
         mapbox.getMapAsync(this)
         settingsClient = LocationServices.getSettingsClient(this)
         setSupportActionBar(toolbar)
@@ -59,6 +71,24 @@ class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineLis
                 enableLocation()
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 finish()
+            }
+        }else if (requestCode == RC_ROSEFIRE_LOGIN) {
+            val result = Rosefire.getSignInResultFromIntent(data)
+            if (!result.isSuccessful) {
+                // The user cancelled the login
+            }
+            FirebaseAuth.getInstance().signInWithCustomToken(result.token).addOnCompleteListener {task: Task<AuthResult> ->
+                Log.d("RR", "signInWithCustomToken:onComplete:" + task.isSuccessful());
+                // If sign in fails, display a message to the user. If sign in succeeds
+                // you should use an AuthStateListener to handle the logic for
+                // signed in user and a signed out user.
+                if (!task.isSuccessful()) {
+                    Log.w("RR", "signInWithCustomToken", task.getException());
+                    Toast.makeText(
+                        this, "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show();
+                }
             }
         }
     }
@@ -122,7 +152,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineLis
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        Toast.makeText(this, "This app needs location permission to be able to show your location on the map", Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            "This app needs location permission to be able to show your location on the map",
+            Toast.LENGTH_LONG
+        ).show()
 
     }
 
@@ -152,8 +186,10 @@ class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineLis
         //1
         map = mapboxMap ?: return
 
-        val locationRequestBuilder = LocationSettingsRequest.Builder().addLocationRequest(LocationRequest()
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY))
+        val locationRequestBuilder = LocationSettingsRequest.Builder().addLocationRequest(
+            LocationRequest()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        )
 
         val locationRequest = locationRequestBuilder?.build()
 
@@ -167,18 +203,25 @@ class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineLis
 
                 if (statusCode == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
                     val resolvableException = it as? ResolvableApiException
-                    resolvableException?.startResolutionForResult(this@MainActivity, REQUEST_CHECK_SETTINGS)
+                    resolvableException?.startResolutionForResult(
+                        this@MainActivity,
+                        REQUEST_CHECK_SETTINGS
+                    )
                 }
             }
         }
 
     }
 
-    override fun onRequestPermissionsResult( requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    fun enableLocation(){
+    fun enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             initializeLocationComponent()
             initializeLocationEngine()
@@ -215,7 +258,7 @@ class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineLis
 
     }
 
-    fun setCameraPosition(location: Location){
+    fun setCameraPosition(location: Location) {
         map.animateCamera(
             CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude))
         )
@@ -224,4 +267,11 @@ class MainActivity : AppCompatActivity(), PermissionsListener, LocationEngineLis
     }
 
     // end mapbox
+
+    // rosefire
+    fun onRosefireLogin() {
+        val signInIntent = Rosefire.getSignInIntent(this, getString(R.string.rosefire_key))
+        startActivityForResult(signInIntent, RC_ROSEFIRE_LOGIN)
+    }
+
 }
