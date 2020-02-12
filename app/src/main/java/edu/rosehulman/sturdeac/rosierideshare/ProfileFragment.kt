@@ -1,6 +1,7 @@
 package edu.rosehulman.sturdeac.rosierideshare
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,23 +12,87 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.OneShotPreDrawListener.add
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.dialog_add.view.*
 import kotlinx.android.synthetic.main.profile_fragment.*
 
 import kotlinx.android.synthetic.main.profile_fragment.view.*
 import java.io.ByteArrayOutputStream
 
-class ProfileFragment : Fragment() {
+class ProfileFragment(var user: User?) : Fragment() {
+
+    val userRef = FirebaseFirestore.getInstance()
+        .collection(Constants.USER_COLLECTION)
+        .document(user!!.id)
+    private lateinit var rootView: View
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        userRef.addSnapshotListener { snapshot, exception ->
+            if(exception != null){
+                Log.e(Constants.TAG, "Error with User Listener", exception)
+                return@addSnapshotListener
+            }
+            Log.d(Constants.TAG, "PROFILE LISTENER: ${snapshot.toString()}")
+            user = User.fromSnapshot(snapshot!!)
+            updateView(rootView)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.profile_fragment, container, false)
-        view.editPicButton.setOnClickListener {
+        rootView = view
+        view.edit_pic_button.setOnClickListener {
             launchChooseIntent()
         }
+        view.edit_user_info_button.setOnClickListener {
+            launchEditDialog()
+        }
+
+        updateView(view)
+
         return view
+    }
+
+    private fun launchEditDialog() {
+        val builder = AlertDialog.Builder(context)
+
+        builder.setTitle(getString(R.string.dialog_title))
+
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_add, null, false)
+
+        view.major_edit_text.setText(user?.major)
+        view.year_edit_text.setText(user?.year)
+
+        builder.setView(view)
+
+        builder.setPositiveButton(android.R.string.ok){_, _ ->
+            user?.major = view.major_edit_text.text.toString()
+            user?.year = view.year_edit_text.text.toString()
+
+            edit(user)
+        }
+
+        builder.setNegativeButton(android.R.string.cancel, null)
+
+        builder.create().show()
+    }
+
+    private fun updateView(view: View){
+        view.name_text_view.text = user?.name
+        view.email_text_view.text = user?.email
+        view.major_text_view.text = user?.major
+        view.year_text_view.text = user?.year
+    }
+
+    private fun edit(user: User?){
+        userRef.set(user!!)
     }
 
     private fun launchChooseIntent() {
@@ -74,7 +139,7 @@ class ProfileFragment : Fragment() {
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
         var bm: Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
-        profilePic.setImageBitmap(bm)
+        profile_pic.setImageBitmap(bm)
         //Change user's profile picture in firebase
 
     }

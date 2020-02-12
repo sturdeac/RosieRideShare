@@ -4,11 +4,10 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/cardview_light_background">
+        android:layout_height="match_parent">
 
     <ImageView
-            android:id="@+id/profilePic"
+            android:id="@+id/profile_pic"
             android:layout_centerHorizontal="true"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -17,65 +16,65 @@
             android:contentDescription="Profile Picture" />
 
     <ImageButton
-        android:id="@+id/editPicButton"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:id="@+id/edit_pic_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_margin="10dp"
-        android:layout_toRightOf="@id/profilePic"
-        android:layout_alignBottom="@id/profilePic"
+        android:layout_toRightOf="@id/profile_pic"
+        android:layout_alignBottom="@id/profile_pic"
         android:contentDescription="Edit Profile Pic Button"
+        android:background="#00FFFFFF"
+        android:scaleType="fitCenter"
         android:src="@android:drawable/ic_menu_edit"
         />
 
     <TextView
-            android:id="@+id/nameTextView"
-            android:layout_below="@id/profilePic"
+            android:id="@+id/name_text_view"
+            android:layout_below="@id/profile_pic"
             android:layout_marginStart="25dp"
             android:textSize="32sp"
             android:textStyle="bold"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="John Doe" />
+            android:layout_height="wrap_content"/>
+
+    <ImageButton
+        android:id="@+id/edit_user_info_button"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@id/name_text_view"
+        android:layout_marginBottom="5dp"
+        android:layout_toEndOf="@id/name_text_view"
+        android:background="#00FFFFFF"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_menu_edit" />
 
     <TextView
-            android:id="@+id/numberTextView"
-            android:layout_below="@id/nameTextView"
+            android:id="@+id/email_text_view"
+            android:layout_below="@id/name_text_view"
             android:layout_marginStart="25dp"
             android:textSize="24sp"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="123-456-7890" />
+            android:layout_height="wrap_content"/>
 
     <TextView
-            android:id="@+id/majorTextView"
-            android:layout_below="@id/numberTextView"
+            android:id="@+id/major_text_view"
+            android:layout_below="@id/email_text_view"
             android:layout_marginStart="25dp"
             android:textSize="24sp"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Computer Engineering" />
+            android:layout_height="wrap_content"/>
 
     <TextView
-            android:id="@+id/yearTextView"
-            android:layout_below="@id/majorTextView"
+            android:id="@+id/year_text_view"
+            android:layout_below="@id/major_text_view"
             android:layout_marginStart="25dp"
             android:textSize="24sp"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Senior" />
+            android:layout_height="wrap_content" />
 
 
-    <ImageView
-            android:id="@+id/schedulePic"
-            android:layout_below="@id/yearTextView"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:src="@drawable/schedule"
-            android:contentDescription="Schedule Picture" />
 </RelativeLayout>

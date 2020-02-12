@@ -27,7 +27,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import kotlinx.android.synthetic.main.main_screen_fragment.*
 import kotlinx.android.synthetic.main.main_screen_fragment.view.*
 
-class MainScreenFragment : Fragment(), PermissionsListener, LocationEngineListener,
+class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, LocationEngineListener,
     OnMapReadyCallback {
 
     var settingsClient: SettingsClient? = null
@@ -55,10 +55,10 @@ class MainScreenFragment : Fragment(), PermissionsListener, LocationEngineListen
         settingsClient = LocationServices.getSettingsClient(activity as MainActivity)
         view.mapbox.onCreate(savedInstanceState)
         view.home_user_profile_pic.setOnClickListener {
-            listener?.onProfileSelected()
+            listener?.onProfileSelected(user!!)
         }
 
-        view.main_screen_user_name.text = (activity as MainActivity).user?.name
+        view.main_screen_user_name.text = user?.name
         return view
     }
 
@@ -75,7 +75,7 @@ class MainScreenFragment : Fragment(), PermissionsListener, LocationEngineListen
     }
 
     interface OnProfileSelectedListener{
-        fun onProfileSelected()
+        fun onProfileSelected(user: User)
     }
 
 

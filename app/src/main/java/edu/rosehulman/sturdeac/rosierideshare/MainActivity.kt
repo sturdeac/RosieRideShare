@@ -26,8 +26,8 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnProfileSelectedLi
 
     private val RC_ROSEFIRE_LOGIN = 1001
     val REQUEST_CHECK_SETTINGS = 1
-    val mainScreenFragment = MainScreenFragment()
     var user: User? = null
+    val mainScreenFragment = MainScreenFragment(user)
 
     private val auth = FirebaseAuth.getInstance()
     lateinit var authListener: FirebaseAuth.AuthStateListener
@@ -53,26 +53,27 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnProfileSelectedLi
         authListener = FirebaseAuth.AuthStateListener { auth: FirebaseAuth ->
             val authUser = auth.currentUser
             Log.d(Constants.TAG, "In the auth listener, user is $authUser")
-            if(authUser != null){
+            if (authUser != null) {
                 Log.d(Constants.TAG, "uid: ${authUser.uid}")
                 Log.d(Constants.TAG, "name: ${authUser.displayName}")
                 Log.d(Constants.TAG, "email: ${authUser.email}")
                 Log.d(Constants.TAG, "phone: ${authUser.phoneNumber}")
                 Log.d(Constants.TAG, "photo: ${authUser.photoUrl}")
 
-                userRef.document(authUser.uid).get().addOnSuccessListener {snapshot ->
-                    if(snapshot.data != null){
+                userRef.document(authUser.uid).get().addOnSuccessListener { snapshot ->
+                    if (snapshot.data != null) {
                         user = User.fromSnapshot(snapshot)
+                        Log.d(Constants.TAG, "USER ID::::${user!!.id}")
                     }
+                    mainScreenFragment.user = user
                     val ft = supportFragmentManager.beginTransaction()
                     ft.replace(R.id.fragment_container, mainScreenFragment)
                     ft.commit()
                 }
-            }else{
+            } else {
                 onRosefireLogin()
             }
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -147,8 +148,8 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnProfileSelectedLi
 
     }
 
-    override fun onProfileSelected(){
-        val profileFragment = ProfileFragment()
+    override fun onProfileSelected(user: User){
+        val profileFragment = ProfileFragment(user)
         val ft = supportFragmentManager.beginTransaction()
         ft.replace(R.id.fragment_container, profileFragment)
         ft.addToBackStack("profile")

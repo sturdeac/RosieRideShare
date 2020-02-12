@@ -9,4 +9,7 @@
     <string name="main_screen_time_hint">1pm</string>
     <string name="main_screen_ride_button">Find Ride</string>
     <string name="profile_pic_description">profile pic</string>
+    <string name="major_hint">major</string>
+    <string name="year_hint">year</string>
+    <string name="dialog_title">Edit Bio</string>
 </resources>
