@@ -16,6 +16,17 @@
             android:src="@mipmap/ic_launcher_round"
             android:contentDescription="Profile Picture" />
 
+    <ImageButton
+        android:id="@+id/editPicButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@id/profilePic"
+        android:layout_alignBottom="@id/profilePic"
+        android:contentDescription="Edit Profile Pic Button"
+        android:src="@android:drawable/ic_menu_edit"
+        />
+
     <TextView
             android:id="@+id/nameTextView"
             android:layout_below="@id/profilePic"
