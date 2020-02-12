@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">RosieRideShare</string>
     <string name="action_settings">Settings</string>
+    <string name="action_logout">logout</string>
+    <string name="main_screen_where_to">Where to:</string>
+    <string name="main_screen_address">Address</string>
+    <string name="main_screen_when">When:</string>
+    <string name="main_screen_when_hint">Monday</string>
+    <string name="main_screen_time_hint">1pm</string>
+    <string name="main_screen_ride_button">Find Ride</string>
+    <string name="profile_pic_description">profile pic</string>
 </resources>

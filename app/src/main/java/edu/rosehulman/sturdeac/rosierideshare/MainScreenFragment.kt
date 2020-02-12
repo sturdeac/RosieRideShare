@@ -57,6 +57,8 @@ class MainScreenFragment : Fragment(), PermissionsListener, LocationEngineListen
         view.home_user_profile_pic.setOnClickListener {
             listener?.onProfileSelected()
         }
+
+        view.main_screen_user_name.text = (activity as MainActivity).user?.name
         return view
     }
 
@@ -110,6 +112,10 @@ class MainScreenFragment : Fragment(), PermissionsListener, LocationEngineListen
     override fun onDestroy() {
         super.onDestroy()
         locationEngine?.deactivate()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         mapbox.onDestroy()
     }
 
