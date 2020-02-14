@@ -17,10 +17,10 @@
         >
         <ImageButton
             android:id="@+id/home_user_profile_pic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher_round"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_margin="5dp"
+            android:scaleType="fitCenter"
             android:background="@null"
             android:contentDescription="@string/profile_pic_description" />
         <TextView
@@ -75,6 +75,16 @@
             android:layout_height="match_parent"
             android:hint="@string/main_screen_time_hint"
             android:inputType="text"/>
+        <Button
+            android:id="@+id/home_ride_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/main_screen_ride_button"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/colorPrimary"
+            />
     </LinearLayout>
 
     <com.mapbox.mapboxsdk.maps.MapView
@@ -83,22 +93,13 @@
         android:layout_height="match_parent"
         mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets"
         android:layout_below="@id/home_time_info"
-        android:layout_above="@id/home_ride_button"/>
-
-    <!--    <com.google.android.gms.maps.MapView-->
-    <!--        android:id="@+id/mapView"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:layout_margin="10dp"-->
-    <!--        android:layout_below="@id/home_time_info"-->
-    <!--        android:layout_above="@id/home_ride_button"-->
-    <!--        app:liteMode="true"/>-->
+        android:layout_above="@id/home_ride_list_button"/>
 
     <Button
-        android:id="@+id/home_ride_button"
+        android:id="@+id/home_ride_list_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/main_screen_ride_button"
+        android:text="@string/ride_list"
         android:textSize="30sp"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/colorPrimary"

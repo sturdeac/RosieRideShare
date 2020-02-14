@@ -1,16 +1,23 @@
 package edu.rosehulman.sturdeac.rosierideshare
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
+import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
@@ -24,6 +31,7 @@ import com.mapbox.mapboxsdk.location.LocationComponent
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.main_screen_fragment.*
 import kotlinx.android.synthetic.main.main_screen_fragment.view.*
 
@@ -36,7 +44,13 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
     var originLocation: Location? = null
     var locationEngine: LocationEngine? = null
     var locationComponent: LocationComponent? = null
-    private var listener: OnProfileSelectedListener? = null
+    private var listener: OnSelectedListener? = null
+    lateinit var rootView: View
+
+    val storageRef: StorageReference = FirebaseStorage
+        .getInstance()
+        .reference
+        .child("user_photos")
 
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
@@ -51,6 +65,7 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
             "pk.eyJ1Ijoic3R1cmRlYWMiLCJhIjoiY2ppZWx2OWtyMDgwbDNrcXBhbnA5cG84OCJ9.Hp5qq-G8KXwAW4hUjP6QVg"
         )
         val view = inflater.inflate(R.layout.main_screen_fragment, container, false)
+        rootView = view
         view.mapbox.getMapAsync(this)
         settingsClient = LocationServices.getSettingsClient(activity as MainActivity)
         view.mapbox.onCreate(savedInstanceState)
@@ -58,13 +73,22 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
             listener?.onProfileSelected(user!!)
         }
 
-        view.main_screen_user_name.text = user?.name
+        view.home_ride_list_button.setOnClickListener {
+            listener?.onRideListSelected(user!!)
+        }
+
+        view.home_ride_button.setOnClickListener {
+            listener?.onFindRideSelected(user!!)
+        }
+
+        updateView(view)
+
         return view
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is OnProfileSelectedListener){
+        if(context is OnSelectedListener){
             listener = context
         }
     }
@@ -74,8 +98,10 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
         listener = null
     }
 
-    interface OnProfileSelectedListener{
+    interface OnSelectedListener{
         fun onProfileSelected(user: User)
+        fun onRideListSelected(user: User)
+        fun onFindRideSelected(user: User)
     }
 
 
@@ -225,6 +251,23 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
         )
         map.animateCamera(CameraUpdateFactory.zoomTo(22.0))
 
+    }
+
+    fun updateView(view: View){
+        storageRef.child(user!!.id).downloadUrl.addOnSuccessListener {data ->
+            Log.d(Constants.TAG, "IMAGE URL: $data")
+            Picasso.get()
+                .load(data)
+                .into(view.home_user_profile_pic)
+            user!!.pic = data.toString()
+        }.addOnFailureListener {
+            Log.d(Constants.TAG, "IMAGE ISNT IN STORAGE")
+            view.home_user_profile_pic.setImageResource(user!!.defaultPic)
+        }
+
+
+
+        view.main_screen_user_name.text = user?.name
     }
 
 }

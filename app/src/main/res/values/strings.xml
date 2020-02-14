@@ -12,4 +12,10 @@
     <string name="major_hint">major</string>
     <string name="year_hint">year</string>
     <string name="dialog_title">Edit Bio</string>
+    <string name="ride_list">Ride List</string>
+    <string name="rider_text">rider</string>
+    <string name="location_text">address</string>
+    <string name="date_text">date</string>
+    <string name="time_text">time</string>
+    <string name="card_pic_description">card pic</string>
 </resources>

@@ -3,16 +3,22 @@ package edu.rosehulman.sturdeac.rosierideshare
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
 import android.util.AttributeSet
 import android.util.Log
+import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Adapter
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -21,13 +27,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import edu.rosehulman.rosefire.Rosefire
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.main_screen_fragment.*
 
-class MainActivity : AppCompatActivity(), MainScreenFragment.OnProfileSelectedListener {
+class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener {
 
     private val RC_ROSEFIRE_LOGIN = 1001
     val REQUEST_CHECK_SETTINGS = 1
+    private val WRITE_EXTERNAL_STORAGE_PERMISSION = 2
     var user: User? = null
-    val mainScreenFragment = MainScreenFragment(user)
+    var mainScreenFragment = MainScreenFragment(user)
 
     private val auth = FirebaseAuth.getInstance()
     lateinit var authListener: FirebaseAuth.AuthStateListener
@@ -42,11 +50,47 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnProfileSelectedLi
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
         initializeListeners()
         auth.addAuthStateListener(authListener)
         Log.d(Constants.TAG, "on create")
 
+    }
+
+    private fun checkPermissions() {
+        // Check to see if we already have permissions
+        Log.d(Constants.TAG,"checking permission")
+        if (ContextCompat
+                .checkSelfPermission(
+                    this,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // If we do not, request them from the user
+            Log.d(Constants.TAG,"requesting permission")
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                WRITE_EXTERNAL_STORAGE_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
+        when (requestCode) {
+            WRITE_EXTERNAL_STORAGE_PERMISSION -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    Log.d(Constants.TAG, "Permission granted")
+                } else {
+                    // permission denied
+                }
+                return
+            }
+        }
     }
 
     private fun initializeListeners() {
@@ -65,10 +109,11 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnProfileSelectedLi
                         user = User.fromSnapshot(snapshot)
                         Log.d(Constants.TAG, "USER ID::::${user!!.id}")
                     }
-                    mainScreenFragment.user = user
+                    mainScreenFragment = MainScreenFragment(user)
                     val ft = supportFragmentManager.beginTransaction()
                     ft.replace(R.id.fragment_container, mainScreenFragment)
                     ft.commit()
+                    checkPermissions()
                 }
             } else {
                 onRosefireLogin()
@@ -155,5 +200,36 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnProfileSelectedLi
         ft.addToBackStack("profile")
         ft.commit()
     }
+    override fun onRideListSelected(user: User){
+        Log.d(Constants.RIDES_TAG,"ride list")
+        val ft = supportFragmentManager.beginTransaction()
+        ft.replace(R.id.fragment_container, RideListFragment.newInstance(user.id))
+        ft.addToBackStack("ride list")
+        ft.commit()
+    }
+
+    override fun onFindRideSelected(user: User){
+        Log.d(Constants.RIDES_TAG,"find ride")
+        createNewRide(user)
+
+        val inputManager:InputMethodManager =getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(currentFocus.windowToken, InputMethodManager.SHOW_FORCED)
+
+        val toast = Toast.makeText(applicationContext, "Your Ride was added to the Ride List", Toast.LENGTH_LONG)
+        toast.setGravity(Gravity.BOTTOM,0,250)
+        toast.show()
+    }
+
+    fun createNewRide(user: User){
+        val adapter = RideListAdapter(this, user.id)
+        val ride = Ride(
+            rider = user,
+            location = home_location_edit_text.text.toString(),
+            date = home_day_edit_text.text.toString(),
+            time = home_time_edit_text.text.toString()
+        )
+        adapter.add(ride)
+    }
+
 
 }

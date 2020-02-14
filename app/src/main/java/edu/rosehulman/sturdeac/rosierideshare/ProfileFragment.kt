@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,18 +15,34 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.OneShotPreDrawListener.add
 import androidx.fragment.app.Fragment
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.dialog_add.view.*
 import kotlinx.android.synthetic.main.profile_fragment.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.main_screen_fragment.view.*
 
 import kotlinx.android.synthetic.main.profile_fragment.view.*
 import java.io.ByteArrayOutputStream
+import kotlin.random.Random
 
 class ProfileFragment(var user: User?) : Fragment() {
+
+    private val WRITE_EXTERNAL_STORAGE_PERMISSION = 2
 
     val userRef = FirebaseFirestore.getInstance()
         .collection(Constants.USER_COLLECTION)
         .document(user!!.id)
+
+    val storageRef: StorageReference = FirebaseStorage
+        .getInstance()
+        .reference
+        .child("user_photos")
+
     private lateinit var rootView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,10 +102,21 @@ class ProfileFragment(var user: User?) : Fragment() {
     }
 
     private fun updateView(view: View){
+        storageRef.child(user!!.id).downloadUrl.addOnSuccessListener {data ->
+            Picasso.get()
+                .load(data)
+                .into(view.profile_pic)
+        }.addOnFailureListener {
+            view.profile_pic.setImageResource(R.mipmap.ic_launcher_round)
+        }
         view.name_text_view.text = user?.name
         view.email_text_view.text = user?.email
         view.major_text_view.text = user?.major
         view.year_text_view.text = user?.year
+    }
+
+    fun add(localPath: String) {
+        ImageRescaleTask(localPath).execute()
     }
 
     private fun edit(user: User?){
@@ -131,6 +159,7 @@ class ProfileFragment(var user: User?) : Fragment() {
 
         override fun onPostExecute(bitmap: Bitmap?) {
             setProfilePic(bitmap)
+            storageAdd(localPath, bitmap)
         }
     }
 
@@ -138,9 +167,32 @@ class ProfileFragment(var user: User?) : Fragment() {
         val baos = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
-        var bm: Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
+        val bm: Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
         profile_pic.setImageBitmap(bm)
+        storageRef.child(user!!.id).downloadUrl
+            .addOnSuccessListener {
+                user?.pic = it.toString()
+                edit(user)
+            }
+            .addOnFailureListener{
+                Log.d(Constants.TAG, "setting pic in firebase failed")
+            }
+        updateView(view!!)
         //Change user's profile picture in firebase
+
+    }
+
+    private fun storageAdd(localPath: String, bitmap: Bitmap?) {
+        val baos = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+        val id = user?.id
+        var uploadTask = storageRef.child(id!!).putBytes(data)
+        uploadTask.addOnFailureListener{
+            Log.d(Constants.TAG, "Image upload failed: $localPath $id")
+        }.addOnSuccessListener {
+            Log.d(Constants.TAG, "Image upload succeeded: $localPath $id")
+        }
 
     }
 
