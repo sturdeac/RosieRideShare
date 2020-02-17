@@ -25,9 +25,6 @@ class RideListAdapter(val context: Context, user: User, val listener: RideListFr
 
     private val user = user
     private val rides = ArrayList<Ride>()
-    private val userRef = FirebaseFirestore
-        .getInstance()
-        .collection(Constants.USER_COLLECTION)
     private val ridesRef = FirebaseFirestore
         .getInstance()
         .collection(Constants.RIDE_COLLECTION)
