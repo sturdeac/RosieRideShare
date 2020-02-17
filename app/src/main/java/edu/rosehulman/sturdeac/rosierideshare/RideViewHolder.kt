@@ -12,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.main_screen_fragment.view.*
 import kotlinx.android.synthetic.main.row_view.view.*
@@ -23,12 +25,13 @@ class RideViewHolder(itemView: View, private val adapter: RideListAdapter): Recy
     private val locationTextView: TextView = itemView.findViewById(R.id.location_text_view)
     private val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
     private val timeTextView: TextView = itemView.findViewById(R.id.time_text_view)
+    private val userRef = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTION)
 
     private var cardView: CardView
 
     init {
         itemView.setOnClickListener {
-            adapter.showDialog(adapterPosition)
+            adapter.checkRideStatus(adapterPosition)
         }
         itemView.setOnLongClickListener {
             //if user matches rider, let them delete
@@ -39,22 +42,28 @@ class RideViewHolder(itemView: View, private val adapter: RideListAdapter): Recy
 
     fun bind(ride: Ride) {
         Log.d(Constants.RIDES_TAG, "binding card")
-        if(ride.rider!!.pic == "") {
-            riderImageView.setImageResource(ride.rider!!.defaultPic)
+
+        userRef.document(ride.rider).get().addOnSuccessListener { snapshot ->
+            val user = User.fromSnapshot(snapshot)
+            if(user.pic == "") {
+                riderImageView.setImageResource(user.defaultPic)
+            }
+            else{
+                val myUri = Uri.parse(user.pic)
+                Picasso.get()
+                    .load(myUri)
+                    .into(riderImageView)
+            }
+            if(ride.accepted){
+                itemView.setBackgroundColor(Color.GREEN)
+            }
+            riderTextView.text = user.name
+            locationTextView.text = ride.location
+            dateTextView.text = ride.date
+            timeTextView.text = ride.time
+
+
         }
-        else{
-            val myUri = Uri.parse(ride.rider!!.pic)
-            Picasso.get()
-                .load(myUri)
-                .into(riderImageView)
-        }
-        if(ride.accepted){
-            itemView.setBackgroundColor(Color.GREEN)
-        }
-        riderTextView.text = ride.rider?.name
-        locationTextView.text = ride.location
-        dateTextView.text = ride.date
-        timeTextView.text = ride.time
 
     }
 

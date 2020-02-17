@@ -5,12 +5,12 @@ import com.google.firebase.firestore.Exclude
 
 data class Ride(
 
-    var rider: User ?= null,
+    var rider: String = "",
     var location: String = "",
     var date: String = "",
     var time: String = "",
     var accepted: Boolean = false,
-    var driver: User ?= null
+    var driver: String = ""
 ) {
 
     @get:Exclude var id = ""

@@ -2,6 +2,7 @@ package edu.rosehulman.sturdeac.rosierideshare
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -34,6 +35,7 @@ class ProfileFragment(var user: User?) : Fragment() {
 
     private val WRITE_EXTERNAL_STORAGE_PERMISSION = 2
 
+
     val userRef = FirebaseFirestore.getInstance()
         .collection(Constants.USER_COLLECTION)
         .document(user!!.id)
@@ -58,6 +60,7 @@ class ProfileFragment(var user: User?) : Fragment() {
             updateView(rootView)
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

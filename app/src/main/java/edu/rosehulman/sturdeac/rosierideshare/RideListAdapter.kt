@@ -12,6 +12,7 @@ import android.provider.Settings.Global.getString
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -20,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.dialog_ride.view.*
 
-class RideListAdapter(val context: Context, user: User): RecyclerView.Adapter<RideViewHolder>() {
+class RideListAdapter(val context: Context, user: User, val listener: RideListFragment.OnAccpetedRideSelectedListener?): RecyclerView.Adapter<RideViewHolder>() {
 
     private val user = user
     private val rides = ArrayList<Ride>()
@@ -72,12 +73,12 @@ class RideListAdapter(val context: Context, user: User): RecyclerView.Adapter<Ri
                 DocumentChange.Type.MODIFIED -> {
                     Log.d(Constants.RIDES_TAG, "Modifying $ride")
                     val index = rides.indexOfFirst { it.id == ride.id }
-                    if(ride.rider?.name == user.name) {
+                    if(ride.rider == user.id) {
                         Log.d(Constants.RIDES_TAG,"notified correct user")
                         val builder = NotificationCompat.Builder(context, "1234")
                             .setSmallIcon(R.drawable.mapbox_info_icon_default)
                             .setContentTitle("Ride Accepted!")
-                            .setContentText("${ride.driver?.name} has accepted your ride.")
+                            .setContentText("${ride.driver} has accepted your ride.")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                             // Set the intent that will fire when the user taps the notification
                             .setContentIntent(pendingIntent)
@@ -117,23 +118,42 @@ class RideListAdapter(val context: Context, user: User): RecyclerView.Adapter<Ri
     fun selectRide(position: Int) {
         val r = rides[position]
         r.accepted = true
-        r.driver = user
+        r.driver = user.id
 
         ridesRef.document(r.id).set(r)
     }
 
-    fun showDialog(position: Int = -1) {
+    fun checkRideStatus(position: Int){
+        val ride = rides[position]
+        if(ride.accepted){
+            if(ride.driver == user.id){
+                listener?.onAcceptedRideSelected(ride.rider)
+            }else if(ride.rider == user.id){
+                listener?.onAcceptedRideSelected(ride.driver)
+            }else{
+                Toast
+                    .makeText(
+                        context,
+                        "This ride has been accepted by someone else.",
+                        Toast.LENGTH_LONG
+                    ).show()
+            }
+
+        }else{
+            showDialog(position)
+        }
+    }
+
+    fun showDialog(position: Int) {
         val builder = AlertDialog.Builder(context)
+
         val view = LayoutInflater.from(context).inflate(
             R.layout.dialog_ride, null, false
         )
 
         builder.setView(view)
 
-        if (position >= 0) {
-            view.ride_name_text_view.setText("Accept ride with ${rides[position].rider?.name}?")
-
-        }
+        view.ride_name_text_view.setText("Accept ride with ${rides[position].rider}?")
 
         builder.setPositiveButton("Accept Ride") { _, _ ->
             selectRide(position)
@@ -141,5 +161,4 @@ class RideListAdapter(val context: Context, user: User): RecyclerView.Adapter<Ri
         builder.setNegativeButton("Ignore", null)
         builder.show()
     }
-
 }

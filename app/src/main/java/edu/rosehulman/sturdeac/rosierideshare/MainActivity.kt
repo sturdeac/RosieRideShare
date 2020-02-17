@@ -33,8 +33,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_screen_fragment.*
 import java.lang.Thread.sleep
 
-class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener {
-
+class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener, RideListFragment.OnAccpetedRideSelectedListener {
     private val RC_ROSEFIRE_LOGIN = 1001
     val REQUEST_CHECK_SETTINGS = 1
     private val WRITE_EXTERNAL_STORAGE_PERMISSION = 2
@@ -221,6 +220,8 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener 
 
     }
 
+
+
     override fun onProfileSelected(user: User){
         val profileFragment = ProfileFragment(user)
         val ft = supportFragmentManager.beginTransaction()
@@ -228,6 +229,15 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener 
         ft.addToBackStack("profile")
         ft.commit()
     }
+
+    override fun onAcceptedRideSelected(userId: String) {
+        //get firebase user with id
+        userRef.document(userId).get().addOnSuccessListener { snapshot ->
+            val user = User.fromSnapshot(snapshot)
+            onProfileSelected(user)
+        }
+    }
+
     override fun onRideListSelected(user: User){
         Log.d(Constants.RIDES_TAG,"ride list")
         val ft = supportFragmentManager.beginTransaction()
@@ -249,13 +259,13 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener 
     }
 
     fun createNewRide(user: User){
-        val adapter = RideListAdapter(this, user)
+        val adapter = RideListAdapter(this, user, null)
         val ride = Ride(
-            rider = user,
+            rider = user.id,
             location = home_location_edit_text.text.toString(),
             date = home_day_edit_text.text.toString(),
             time = home_time_edit_text.text.toString(),
-            driver = User()
+            driver = ""
         )
         adapter.add(ride)
     }
