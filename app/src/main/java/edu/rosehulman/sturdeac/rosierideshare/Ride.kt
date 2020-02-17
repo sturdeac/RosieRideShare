@@ -9,7 +9,9 @@ data class Ride(
     var location: String = "",
     var date: String = "",
     var time: String = "",
-    var accepted: Boolean = false) {
+    var accepted: Boolean = false,
+    var driver: User ?= null
+) {
 
     @get:Exclude var id = ""
 

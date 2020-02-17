@@ -1,21 +1,42 @@
 package edu.rosehulman.sturdeac.rosierideshare
 
 import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings.Global.getString
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.dialog_ride.view.*
 
-class RideListAdapter(val context: Context, uid: String): RecyclerView.Adapter<RideViewHolder>() {
+class RideListAdapter(val context: Context, user: User): RecyclerView.Adapter<RideViewHolder>() {
 
-    private val uid = uid
+    private val user = user
     private val rides = ArrayList<Ride>()
+    private val userRef = FirebaseFirestore
+        .getInstance()
+        .collection(Constants.USER_COLLECTION)
     private val ridesRef = FirebaseFirestore
         .getInstance()
         .collection(Constants.RIDE_COLLECTION)
+
+    // Create an explicit intent for an Activity in your app
+    val intent = Intent(context, MainActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+    val pendingIntent: PendingIntent = PendingIntent.getActivity(context,0,intent,0)
+
 
     private lateinit var listenerRegistration: ListenerRegistration
 
@@ -51,7 +72,24 @@ class RideListAdapter(val context: Context, uid: String): RecyclerView.Adapter<R
                 DocumentChange.Type.MODIFIED -> {
                     Log.d(Constants.RIDES_TAG, "Modifying $ride")
                     val index = rides.indexOfFirst { it.id == ride.id }
-                    rides[index] = ride
+                    if(ride.rider?.name == user.name) {
+                        Log.d(Constants.RIDES_TAG,"notified correct user")
+                        val builder = NotificationCompat.Builder(context, "1234")
+                            .setSmallIcon(R.drawable.mapbox_info_icon_default)
+                            .setContentTitle("Ride Accepted!")
+                            .setContentText("${ride.driver?.name} has accepted your ride.")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            // Set the intent that will fire when the user taps the notification
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true)
+                        with(NotificationManagerCompat.from(context)) {
+                            // notificationId is a unique int for each notification that you must define
+                            notify(1234, builder.build())
+                        }
+                        rides[index] = ride
+                    }
+
+
                     notifyItemChanged(index)
                 }
             }
@@ -78,6 +116,9 @@ class RideListAdapter(val context: Context, uid: String): RecyclerView.Adapter<R
 
     fun selectRide(position: Int) {
         val r = rides[position]
+        r.accepted = true
+        r.driver = user
+
         ridesRef.document(r.id).set(r)
     }
 
@@ -95,7 +136,6 @@ class RideListAdapter(val context: Context, uid: String): RecyclerView.Adapter<R
         }
 
         builder.setPositiveButton("Accept Ride") { _, _ ->
-            rides[position].accepted = true
             selectRide(position)
         }
         builder.setNegativeButton("Ignore", null)

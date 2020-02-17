@@ -10,27 +10,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 
-private const val ARG_UID = "UID"
+private const val ARG_UID = "USER"
 
-class RideListFragment: Fragment() {
+class RideListFragment(user: User): Fragment() {
 
-    private var uid: String? = null
+    private var currentUser: User ?= user
     lateinit var adapter: RideListAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            uid = it.getString(ARG_UID)
-            Log.d(Constants.RIDES_TAG,"uid: $uid")
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val recyclerView = inflater.inflate(R.layout.ride_list_fragment, container, false) as RecyclerView
-        adapter = RideListAdapter(context!!, uid!!)
+        adapter = RideListAdapter(context!!, currentUser!!)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
@@ -40,11 +32,8 @@ class RideListFragment: Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(uid: String) =
-            RideListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_UID, uid)
-                }
+        fun newInstance(user: User) =
+            RideListFragment(user).apply {
             }
     }
 

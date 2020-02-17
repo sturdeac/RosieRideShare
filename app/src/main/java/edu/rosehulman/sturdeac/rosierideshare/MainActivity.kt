@@ -1,9 +1,12 @@
 package edu.rosehulman.sturdeac.rosierideshare
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
@@ -44,16 +47,36 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener 
             .getInstance()
         .collection(Constants.USER_COLLECTION)
 
+    fun getCurrentUser(): User{
+        return user!!
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         initializeListeners()
         auth.addAuthStateListener(authListener)
         Log.d(Constants.TAG, "on create")
+        createNotificationChannel()
+    }
 
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = "notification channel description"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("1234", name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun checkPermissions() {
@@ -203,7 +226,7 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener 
     override fun onRideListSelected(user: User){
         Log.d(Constants.RIDES_TAG,"ride list")
         val ft = supportFragmentManager.beginTransaction()
-        ft.replace(R.id.fragment_container, RideListFragment.newInstance(user.id))
+        ft.replace(R.id.fragment_container, RideListFragment.newInstance(user))
         ft.addToBackStack("ride list")
         ft.commit()
     }
@@ -221,12 +244,13 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener 
     }
 
     fun createNewRide(user: User){
-        val adapter = RideListAdapter(this, user.id)
+        val adapter = RideListAdapter(this, user)
         val ride = Ride(
             rider = user,
             location = home_location_edit_text.text.toString(),
             date = home_day_edit_text.text.toString(),
-            time = home_time_edit_text.text.toString()
+            time = home_time_edit_text.text.toString(),
+            driver = User()
         )
         adapter.add(ride)
     }
