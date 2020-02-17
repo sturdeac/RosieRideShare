@@ -31,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import edu.rosehulman.rosefire.Rosefire
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_screen_fragment.*
+import java.lang.Thread.sleep
 
 class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener {
 
@@ -163,19 +164,23 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener 
 
             FirebaseAuth.getInstance().signInWithCustomToken(result.token).addOnCompleteListener {task: Task<AuthResult> ->
 
-                userRef.document(result.username).get().addOnSuccessListener {snapshot ->
-                    if(snapshot.data == null){
-                        Log.d(Constants.TAG, "add user")
+                userRef.document(result.username).get().addOnSuccessListener { snapshot ->
+                    if (snapshot.data == null) {
                         val user = User(
                             name = result.name,
                             email = result.email
                         )
                         userRef.document(result.username).set(user)
-                            .addOnSuccessListener { Log.d(Constants.TAG, "DocumentSnapshot successfully written!") }
-                            .addOnFailureListener { e -> Log.w(Constants.TAG, "Error writing document", e) }
+                            .addOnSuccessListener {
+                                Log.d(Constants.TAG, "DocumentSnapshot successfully written!")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w(Constants.TAG, "Error writing document", e)
+                            }
                     }
                 }
 
+                sleep(2000)
                 Log.d(Constants.TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful())
                 if (!task.isSuccessful()) {
                     Log.w(Constants.TAG, "signInWithCustomToken", task.getException())
