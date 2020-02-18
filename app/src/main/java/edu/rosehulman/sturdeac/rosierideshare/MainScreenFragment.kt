@@ -295,7 +295,6 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
 
     fun updateView(view: View){
         storageRef.child(user!!.id).downloadUrl.addOnSuccessListener {data ->
-            Log.d(Constants.TAG, "IMAGE URL: $data")
             Picasso.get()
                 .load(data)
                 .into(view.home_user_profile_pic)

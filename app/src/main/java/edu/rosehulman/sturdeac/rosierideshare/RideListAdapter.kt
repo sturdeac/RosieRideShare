@@ -57,21 +57,17 @@ class RideListAdapter(val context: Context, user: User, val listener: RideListFr
             val ride = Ride.fromSnapshot(documentChange.document)
             when (documentChange.type) {
                 DocumentChange.Type.ADDED -> {
-                    Log.d(Constants.RIDES_TAG, "Adding $ride")
                     rides.add(0, ride)
                     notifyItemInserted(0)
                 }
                 DocumentChange.Type.REMOVED -> {
-                    Log.d(Constants.RIDES_TAG, "Removing $ride")
                     val index = rides.indexOfFirst { it.id == ride.id }
                     rides.removeAt(index)
                     notifyItemRemoved(index)
                 }
                 DocumentChange.Type.MODIFIED -> {
-                    Log.d(Constants.RIDES_TAG, "Modifying $ride")
                     val index = rides.indexOfFirst { it.id == ride.id }
                     if(ride.rider == user.id) {
-                        Log.d(Constants.RIDES_TAG,"notified correct user")
                         val builder = NotificationCompat.Builder(context, "1234")
                             .setSmallIcon(R.drawable.mapbox_info_icon_default)
                             .setContentTitle("Ride Accepted!")

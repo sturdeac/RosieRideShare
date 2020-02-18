@@ -55,7 +55,6 @@ class ProfileFragment(var user: User?) : Fragment() {
                 Log.e(Constants.TAG, "Error with User Listener", exception)
                 return@addSnapshotListener
             }
-            Log.d(Constants.TAG, "PROFILE LISTENER: ${snapshot.toString()}")
             user = User.fromSnapshot(snapshot!!)
             updateView(rootView)
         }
@@ -116,10 +115,6 @@ class ProfileFragment(var user: User?) : Fragment() {
         view.email_text_view.text = user?.email
         view.major_text_view.text = user?.major
         view.year_text_view.text = user?.year
-    }
-
-    fun add(localPath: String) {
-        ImageRescaleTask(localPath).execute()
     }
 
     private fun edit(user: User?){

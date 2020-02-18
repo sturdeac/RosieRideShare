@@ -43,7 +43,6 @@ class RideViewHolder(itemView: View, private val adapter: RideListAdapter): Recy
     }
 
     fun bind(ride: Ride) {
-        Log.d(Constants.RIDES_TAG, "binding card")
 
         userRef.document(ride.rider).get().addOnSuccessListener { snapshot ->
             val user = User.fromSnapshot(snapshot)

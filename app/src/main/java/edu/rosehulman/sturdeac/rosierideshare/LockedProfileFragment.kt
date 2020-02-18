@@ -17,7 +17,7 @@ class LockedProfileFragment(user: User) : Fragment() {
     var user = user
     val userRef = FirebaseFirestore.getInstance()
         .collection(Constants.USER_COLLECTION)
-        .document(user!!.id)
+        .document(user.id)
 
     val storageRef: StorageReference = FirebaseStorage
         .getInstance()
@@ -34,7 +34,6 @@ class LockedProfileFragment(user: User) : Fragment() {
                 Log.e(Constants.TAG, "Error with User Listener", exception)
                 return@addSnapshotListener
             }
-            Log.d(Constants.TAG, "PROFILE LISTENER: ${snapshot.toString()}")
             user = User.fromSnapshot(snapshot!!)
             updateView(rootView)
         }
@@ -50,17 +49,17 @@ class LockedProfileFragment(user: User) : Fragment() {
     }
 
     private fun updateView(view: View){
-        storageRef.child(user!!.id).downloadUrl.addOnSuccessListener {data ->
+        storageRef.child(user.id).downloadUrl.addOnSuccessListener {data ->
             Picasso.get()
                 .load(data)
                 .into(view.profile_pic)
         }.addOnFailureListener {
             view.profile_pic.setImageResource(R.mipmap.ic_launcher_round)
         }
-        view.name_text_view.text = user?.name
-        view.email_text_view.text = user?.email
-        view.major_text_view.text = user?.major
-        view.year_text_view.text = user?.year
+        view.name_text_view.text = user.name
+        view.email_text_view.text = user.email
+        view.major_text_view.text = user.major
+        view.year_text_view.text = user.year
     }
 
 }

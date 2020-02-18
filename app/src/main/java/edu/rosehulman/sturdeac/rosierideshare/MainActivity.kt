@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
         setSupportActionBar(toolbar)
         initializeListeners()
         auth.addAuthStateListener(authListener)
-        Log.d(Constants.TAG, "on create")
         createNotificationChannel()
     }
 
@@ -81,7 +80,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
 
     private fun checkPermissions() {
         // Check to see if we already have permissions
-        Log.d(Constants.TAG,"checking permission")
         if (ContextCompat
                 .checkSelfPermission(
                     this,
@@ -89,7 +87,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
                 ) != PackageManager.PERMISSION_GRANTED
         ) {
             // If we do not, request them from the user
-            Log.d(Constants.TAG,"requesting permission")
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -107,9 +104,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
-                    Log.d(Constants.TAG, "Permission granted")
-                } else {
-                    // permission denied
                 }
                 return
             }
@@ -119,18 +113,10 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
     private fun initializeListeners() {
         authListener = FirebaseAuth.AuthStateListener { auth: FirebaseAuth ->
             val authUser = auth.currentUser
-            Log.d(Constants.TAG, "In the auth listener, user is $authUser")
             if (authUser != null) {
-                Log.d(Constants.TAG, "uid: ${authUser.uid}")
-                Log.d(Constants.TAG, "name: ${authUser.displayName}")
-                Log.d(Constants.TAG, "email: ${authUser.email}")
-                Log.d(Constants.TAG, "phone: ${authUser.phoneNumber}")
-                Log.d(Constants.TAG, "photo: ${authUser.photoUrl}")
-
                 userRef.document(authUser.uid).get().addOnSuccessListener { snapshot ->
                     if (snapshot.data != null) {
                         user = User.fromSnapshot(snapshot)
-                        Log.d(Constants.TAG, "USER ID::::${user!!.id}")
                     }
                     mainScreenFragment = MainScreenFragment(user)
                     val ft = supportFragmentManager.beginTransaction()
@@ -157,7 +143,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
         }else if (requestCode == RC_ROSEFIRE_LOGIN) {
             val result = Rosefire.getSignInResultFromIntent(data)
             if (!result.isSuccessful) {
-                Log.d(Constants.TAG, "login failed")
                 return
             }
 
@@ -180,7 +165,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
                 }
 
                 sleep(2000)
-                Log.d(Constants.TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful())
                 if (!task.isSuccessful()) {
                     Log.w(Constants.TAG, "signInWithCustomToken", task.getException())
                     Toast.makeText(
@@ -246,7 +230,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
     }
 
     override fun onRideListSelected(user: User){
-        Log.d(Constants.RIDES_TAG,"ride list")
         val ft = supportFragmentManager.beginTransaction()
         ft.replace(R.id.fragment_container, RideListFragment.newInstance(user))
         ft.addToBackStack("ride list")
@@ -254,7 +237,6 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
     }
 
     override fun onFindRideSelected(user: User, ride: Ride){
-        Log.d(Constants.RIDES_TAG,"find ride")
         createNewRide(user, ride)
 
         //Crashes when user hits find ride and keyboard is already put away
