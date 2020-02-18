@@ -115,7 +115,7 @@ class RideListAdapter(val context: Context, user: User, val listener: RideListFr
         else{
             Toast.makeText(
                 context, "This is someone else's ride.",
-                Toast.LENGTH_SHORT)
+                Toast.LENGTH_SHORT).show()
         }
     }
 
