@@ -17,8 +17,8 @@
         >
         <ImageButton
             android:id="@+id/home_user_profile_pic"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:layout_margin="5dp"
             android:scaleType="fitCenter"
             android:background="@null"
@@ -31,80 +31,24 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/home_location_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/main_screen_where_to"
-        android:textSize="30sp"
-        android:layout_marginHorizontal="5dp"
-        android:layout_below="@id/home_user_info"
-        />
-
-    <EditText
-        android:id="@+id/home_location_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/main_screen_address"
-        android:layout_below="@id/home_location_title"
-        android:inputType="text"/>
-
-    <LinearLayout
-        android:id="@+id/home_time_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="5dp"
-        android:layout_below="@id/home_location_edit_text"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/main_screen_when"
-            android:textSize="30sp" />
-        <EditText
-            android:id="@+id/home_day_edit_text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="5dp"
-            android:hint="@string/main_screen_when_hint"
-            android:inputType="text"/>
-        <EditText
-            android:id="@+id/home_time_edit_text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:hint="@string/main_screen_time_hint"
-            android:inputType="text"/>
-        <Button
-            android:id="@+id/home_ride_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/main_screen_ride_button"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/colorPrimary"
-            />
-    </LinearLayout>
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapbox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets"
-        android:layout_below="@id/home_time_info"
-        android:layout_above="@id/home_ride_list_button"/>
+        android:layout_below="@id/home_user_info"
+        android:layout_above="@id/home_ride_button"/>
 
     <Button
-        android:id="@+id/home_ride_list_button"
-        android:layout_width="wrap_content"
+        android:id="@+id/home_ride_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/ride_list"
+        android:layout_alignParentBottom="true"
+        android:text="@string/main_screen_ride_button"
         android:textSize="30sp"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/colorPrimary"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         />
 
 </RelativeLayout>

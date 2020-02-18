@@ -109,7 +109,14 @@ class RideListAdapter(val context: Context, user: User, val listener: RideListFr
     }
 
     fun remove(position: Int) {
-       ridesRef.document(rides[position].id).delete()
+        if(rides[position].rider == user.id) {
+            ridesRef.document(rides[position].id).delete()
+        }
+        else{
+            Toast.makeText(
+                context, "This is someone else's ride.",
+                Toast.LENGTH_SHORT)
+        }
     }
 
     fun selectRide(position: Int) {

@@ -7,6 +7,7 @@ data class Ride(
 
     var rider: String = "",
     var location: String = "",
+    var pickup: String = "",
     var date: String = "",
     var time: String = "",
     var accepted: Boolean = false,

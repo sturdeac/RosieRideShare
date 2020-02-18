@@ -1,21 +1,22 @@
 <resources>
     <string name="app_name">RosieRideShare</string>
     <string name="action_settings">Settings</string>
-    <string name="action_logout">logout</string>
+    <string name="action_logout">Logout</string>
     <string name="main_screen_where_to">Where to:</string>
     <string name="main_screen_address">Address</string>
     <string name="main_screen_when">When:</string>
     <string name="main_screen_when_hint">Monday</string>
     <string name="main_screen_time_hint">1pm</string>
     <string name="main_screen_ride_button">Find Ride</string>
-    <string name="profile_pic_description">profile pic</string>
-    <string name="major_hint">major</string>
-    <string name="year_hint">year</string>
+    <string name="profile_pic_description">Profile Pic</string>
+    <string name="major_hint">Major</string>
+    <string name="year_hint">Year</string>
     <string name="dialog_title">Edit Bio</string>
     <string name="ride_list">Ride List</string>
-    <string name="rider_text">rider</string>
-    <string name="location_text">address</string>
-    <string name="date_text">date</string>
-    <string name="time_text">time</string>
-    <string name="card_pic_description">card pic</string>
+    <string name="rider_text">Rider</string>
+    <string name="location_text">Address</string>
+    <string name="date_text">Date</string>
+    <string name="time_text">Time</string>
+    <string name="card_pic_description">Card Pic</string>
+    <string name="ride_dialog_title">Ride Information</string>
 </resources>

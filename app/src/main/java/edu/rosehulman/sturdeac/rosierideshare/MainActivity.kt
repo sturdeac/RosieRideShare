@@ -204,9 +204,12 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
             R.id.action_logout -> {
                 auth.signOut()
+                true
+            }
+            R.id.action_show_list-> {
+                onRideListSelected(user!!)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -234,7 +237,11 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
         //get firebase user with id
         userRef.document(userId).get().addOnSuccessListener { snapshot ->
             val user = User.fromSnapshot(snapshot)
-            onProfileSelected(user)
+            val lockedProfileFragment = LockedProfileFragment(user)
+            val ft = supportFragmentManager.beginTransaction()
+            ft.replace(R.id.fragment_container, lockedProfileFragment)
+            ft.addToBackStack("locked profile")
+            ft.commit()
         }
     }
 
@@ -246,28 +253,33 @@ class MainActivity : AppCompatActivity(), MainScreenFragment.OnSelectedListener,
         ft.commit()
     }
 
-    override fun onFindRideSelected(user: User){
+    override fun onFindRideSelected(user: User, ride: Ride){
         Log.d(Constants.RIDES_TAG,"find ride")
-        createNewRide(user)
+        createNewRide(user, ride)
 
+        //Crashes when user hits find ride and keyboard is already put away
+/*
         val inputManager:InputMethodManager =getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputManager.hideSoftInputFromWindow(currentFocus.windowToken, InputMethodManager.SHOW_FORCED)
+            inputManager.hideSoftInputFromWindow(
+                currentFocus.windowToken,
+                InputMethodManager.SHOW_FORCED
+            )
 
+ */
         val toast = Toast.makeText(applicationContext, "Your Ride was added to the Ride List", Toast.LENGTH_LONG)
         toast.setGravity(Gravity.BOTTOM,0,250)
         toast.show()
     }
 
-    fun createNewRide(user: User){
+    fun createNewRide(user: User, ride: Ride){
         val adapter = RideListAdapter(this, user, null)
-        val ride = Ride(
-            rider = user.id,
-            location = home_location_edit_text.text.toString(),
-            date = home_day_edit_text.text.toString(),
-            time = home_time_edit_text.text.toString(),
-            driver = ""
-        )
         adapter.add(ride)
+    }
+
+    override fun onBackPressed() {
+
+        super.onBackPressed()
+        mainScreenFragment.updateView(mainScreenFragment.rootView)
     }
 
 

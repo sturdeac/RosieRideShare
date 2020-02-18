@@ -1,5 +1,6 @@
 package edu.rosehulman.sturdeac.rosierideshare
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.location.Location
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
@@ -32,6 +34,8 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.dialog_add.view.*
+import kotlinx.android.synthetic.main.dialog_add_ride.view.*
 import kotlinx.android.synthetic.main.main_screen_fragment.*
 import kotlinx.android.synthetic.main.main_screen_fragment.view.*
 
@@ -56,6 +60,7 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
 //        super.onCreate(savedInstanceState)
 //    }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,17 +78,41 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
             listener?.onProfileSelected(user!!)
         }
 
-        view.home_ride_list_button.setOnClickListener {
-            listener?.onRideListSelected(user!!)
-        }
-
         view.home_ride_button.setOnClickListener {
-            listener?.onFindRideSelected(user!!)
+            openRideDialog()
+            //listener?.onFindRideSelected(user!!)
+            //updateView(view)
         }
 
         updateView(view)
 
         return view
+    }
+
+    private fun openRideDialog() {
+        val builder = AlertDialog.Builder(context)
+
+        builder.setTitle(getString(R.string.ride_dialog_title))
+
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_add_ride, null, false)
+
+        builder.setView(view)
+
+        builder.setPositiveButton(android.R.string.ok){_, _ ->
+            val ride = Ride(
+                rider = user!!.id,
+                location = view.home_location_edit_text.text.toString(),
+                date = view.home_day_edit_text.text.toString(),
+                time = view.home_time_edit_text.text.toString(),
+                driver = ""
+            )
+
+            listener?.onFindRideSelected(user!!, ride)
+        }
+
+        builder.setNegativeButton(android.R.string.cancel, null)
+
+        builder.create().show()
     }
 
     override fun onAttach(context: Context) {
@@ -101,7 +130,7 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
     interface OnSelectedListener{
         fun onProfileSelected(user: User)
         fun onRideListSelected(user: User)
-        fun onFindRideSelected(user: User)
+        fun onFindRideSelected(user: User, ride: Ride)
     }
 
 
@@ -253,6 +282,17 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
 
     }
 
+    fun EditText.updateText(text: String) {
+        val focussed = hasFocus()
+        if (focussed) {
+            clearFocus()
+        }
+        setText(text)
+        if (focussed) {
+            requestFocus()
+        }
+    }
+
     fun updateView(view: View){
         storageRef.child(user!!.id).downloadUrl.addOnSuccessListener {data ->
             Log.d(Constants.TAG, "IMAGE URL: $data")
@@ -264,8 +304,6 @@ class MainScreenFragment(var user: User?) : Fragment(), PermissionsListener, Loc
             Log.d(Constants.TAG, "IMAGE ISNT IN STORAGE")
             view.home_user_profile_pic.setImageResource(user!!.defaultPic)
         }
-
-
 
         view.main_screen_user_name.text = user?.name
     }

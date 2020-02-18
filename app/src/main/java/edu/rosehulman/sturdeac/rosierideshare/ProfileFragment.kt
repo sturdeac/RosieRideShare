@@ -161,8 +161,9 @@ class ProfileFragment(var user: User?) : Fragment() {
         }
 
         override fun onPostExecute(bitmap: Bitmap?) {
-            setProfilePic(bitmap)
             storageAdd(localPath, bitmap)
+            Thread.sleep(1000)
+            setProfilePic(bitmap)
         }
     }
 

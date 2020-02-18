@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -25,6 +26,7 @@ class RideViewHolder(itemView: View, private val adapter: RideListAdapter): Recy
     private val locationTextView: TextView = itemView.findViewById(R.id.location_text_view)
     private val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
     private val timeTextView: TextView = itemView.findViewById(R.id.time_text_view)
+    private val statusBar: ProgressBar = itemView.findViewById(R.id.ride_status_bar)
     private val userRef = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTION)
 
     private var cardView: CardView
@@ -34,7 +36,7 @@ class RideViewHolder(itemView: View, private val adapter: RideListAdapter): Recy
             adapter.checkRideStatus(adapterPosition)
         }
         itemView.setOnLongClickListener {
-            //if user matches rider, let them delete
+            adapter.remove(adapterPosition)
             true
         }
         cardView = itemView.row_card_view
@@ -55,7 +57,7 @@ class RideViewHolder(itemView: View, private val adapter: RideListAdapter): Recy
                     .into(riderImageView)
             }
             if(ride.accepted){
-                itemView.setBackgroundColor(Color.GREEN)
+                statusBar.progress = 100
             }
             riderTextView.text = user.name
             locationTextView.text = ride.location
